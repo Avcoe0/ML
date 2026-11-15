@@ -1,0 +1,631 @@
+
+# 1. Import library
+import random
+
+# 2. Create Environment
+board = [" "] * 9
+
+# Q-table
+Q = {}
+
+# Get state of board
+def get_state(board):
+    return "".join(board)
+
+# 3. Display Tic-Tac-Toe Board
+def show_board(board):
+    print()
+    print(board[0], "|", board[1], "|", board[2])
+    print("--+---+--")
+    print(board[3], "|", board[4], "|", board[5])
+    print("--+---+--")
+    print(board[6], "|", board[7], "|", board[8])
+
+# 4. Check Winner
+def check_winner(board):
+    wins = [
+        (0,1,2), (3,4,5), (6,7,8),
+        (0,3,6), (1,4,7), (2,5,8),
+        (0,4,8), (2,4,6)
+    ]
+
+    for a, b, c in wins:
+        if board[a] != " " and board[a] == board[b] == board[c]:
+            return board[a]
+
+    if " " not in board:
+        return "Draw"
+
+    return None
+
+# 5. Choose Action
+def choose_action(board, epsilon=0.1):
+    state = get_state(board)
+
+    if state not in Q:
+        Q[state] = [0] * 9
+
+    available = [i for i in range(9) if board[i] == " "]
+
+    # Exploration
+    if random.random() < epsilon:
+        return random.choice(available)
+
+    # Exploitation
+    return max(available, key=lambda x: Q[state][x])
+
+# 6. Train the Model
+def train(episodes=5000):
+    for episode in range(episodes):
+        board = [" "] * 9
+
+        while True:
+            state = get_state(board)
+
+            action = choose_action(board)
+            board[action] = "X"
+
+            result = check_winner(board)
+
+            if result == "X":
+                Q[state][action] += 1
+                break
+
+            if result == "Draw":
+                break
+
+            # Random opponent
+            available = [i for i in range(9) if board[i] == " "]
+            opponent = random.choice(available)
+            board[opponent] = "O"
+
+            result = check_winner(board)
+
+            if result == "O":
+                Q[state][action] -= 1
+                break
+
+            if result == "Draw":
+                break
+
+            new_state = get_state(board)
+
+            if new_state not in Q:
+                Q[new_state] = [0] * 9
+
+            # Q-learning update
+            Q[state][action] += 0.1 * (
+                0.9 * max(Q[new_state]) - Q[state][action]
+            )
+
+    print("Training completed!")
+
+# 7. Play Game
+def play_game():
+    board = [" "] * 9
+
+    print("\nTic-Tac-Toe")
+    print("Positions are:")
+    print("0 | 1 | 2")
+    print("--+---+--")
+    print("3 | 4 | 5")
+    print("--+---+--")
+    print("6 | 7 | 8")
+
+    while True:
+        # AI move
+        action = choose_action(board, epsilon=0)
+        board[action] = "X"
+
+        show_board(board)
+
+        result = check_winner(board)
+
+        if result:
+            print("Result:", result)
+            break
+
+        # Human move
+        move = int(input("Enter your move (0-8): "))
+
+        if move < 0 or move > 8 or board[move] != " ":
+            print("Invalid move!")
+            continue
+
+        board[move] = "O"
+
+        result = check_winner(board)
+
+        if result:
+            show_board(board)
+            print("Result:", result)
+            break
+
+# 8. Train and Test
+train(5000)
+play_game()
+
+
+
+
+
+
+
+
+
+
+1. Import Library
+import random
+
+Explanation:
+- random is a Python library used to generate random choices.
+- It is used to select random moves during training and exploration.
+2. Create Environment
+board = [" "] * 9Q = {}
+
+
+
+Explanation:
+
+First line:
+board = [" "] * 9
+
+
+
+- Creates an empty Tic-Tac-Toe board.
+- [" "] represents an empty position.
+- * 9 creates 9 empty positions.
+The board looks like this:
+0
+Empty
+
+1
+Empty
+
+2
+Empty
+
+3
+Empty
+
+4
+Empty
+
+5
+Empty
+
+6
+Empty
+
+7
+Empty
+
+8
+Empty
+
+
+Nine positions numbered 0 to 8
+Second line:
+Q = {}
+
+
+
+- Creates an empty dictionary called Q.
+- It stores the Q-values for different board states and actions.
+- Q-values help the AI learn which moves are better.
+What is a Q-table?
+
+A Q-table stores the estimated value of taking a particular action in a particular state.
+3. Get State of Board
+def get_state(board):    return "".join(board)
+
+
+
+Explanation:
+- def: Defines a function.
+- get_state(board): Takes the current board as input.
+- "".join(board): Combines all 9 board positions into one string.
+For example:
+["X", " ", "O", " ", "X", " ", " ", " ", "O"]
+
+
+
+Becomes:
+X O X   O
+
+
+Why do we use it?
+
+To represent each board arrangement as a unique state that can be stored in the Q-table.
+4. Display Tic-Tac-Toe Board
+def show_board(board):    print()    print(board[0], "|", board[1], "|", board[2])    print("--+---+--")    print(board[3], "|", board[4], "|", board[5])    print("--+---+--")    print(board[6], "|", board[7], "|", board[8])
+
+
+
+Explanation:
+- show_board(board): Defines a function to display the board.
+- print(): Adds an empty line.
+- board[0], board[1], board[2]: Displays the first row.
+- board[3], board[4], board[5]: Displays the second row.
+- board[6], board[7], board[8]: Displays the third row.
+- "|" and "--+---+--" are used to create the board structure.
+Why do we use it?
+
+To display the current game situation on the screen.
+5. Check Winner
+def check_winner(board):    wins = [        (0,1,2), (3,4,5), (6,7,8),        (0,3,6), (1,4,7), (2,5,8),        (0,4,8), (2,4,6)    ]
+
+
+
+Explanation:
+- check_winner(): Checks whether a player has won.
+- wins: Stores all 8 possible winning combinations.
+These include:
+1. Three horizontal combinations.
+2. Three vertical combinations.
+3. Two diagonal combinations.
+Winning combinations
+1
+0,1,2
+
+
+2
+3,4,5
+
+
+3
+6,7,8
+
+
+4
+0,3,6
+
+
+5
+1,4,7
+
+
+6
+2,5,8
+
+
+7
+0,4,8
+
+
+8
+2,4,6
+
+
+
+
+Now understand the remaining code:
+for a, b, c in wins:    if board[a] != " " and board[a] == board[b] == board[c]:        return board[a]
+
+
+
+- for a, b, c in wins: Checks every winning combination.
+- board[a] != " ": Checks that the first position is not empty.
+- board[a] == board[b] == board[c]: Checks whether all three positions contain the same symbol.
+- return board[a]: Returns "X" or "O" if a player wins.
+if " " not in board:    return "Draw"
+
+
+
+- Checks whether the board has any empty positions.
+- If no empty position is available and nobody has won, it returns "Draw".
+return None
+
+
+
+- Returns None if the game is still going on.
+6. Choose Action
+def choose_action(board, epsilon=0.1):    state = get_state(board)
+
+
+
+- Defines a function to select the AI's next move.
+- epsilon=0.1 means a 10% exploration probability.
+- get_state(board) converts the board into a state string.
+if state not in Q:    Q[state] = [0] * 9
+
+
+
+- Checks whether the current state exists in the Q-table.
+- If not, creates 9 Q-values initialized to zero.
+available = [i for i in range(9) if board[i] == " "]
+
+
+
+- Finds all empty positions.
+- range(9) checks positions 0 to 8.
+- board[i] == " " selects only empty positions.
+Exploration
+if random.random() < epsilon:    return random.choice(available)
+
+
+
+- random.random(): Generates a random number between 0 and 1.
+- If the number is less than epsilon, the AI selects a random available move.
+- This is called exploration.
+Exploitation
+return max(available, key=lambda x: Q[state][x])
+
+
+
+- Selects the available move with the highest Q-value.
+- max() finds the maximum value.
+- lambda helps compare the Q-value of each available move.
+This is called exploitation because the AI uses what it has learned.
+
+Remember the difference:
+Exploration	Exploitation
+Tries new moves	Chooses the best-known move
+Random action	Highest Q-value action
+Learns new possibilities	Uses learned knowledge
+
+7. Train the Model
+def train(episodes=5000):    for episode in range(episodes):        board = [" "] * 9
+
+
+
+Explanation:
+- train(): Defines the training function.
+- episodes=5000: Trains the AI for 5000 games.
+- for episode in range(episodes): Repeats training 5000 times.
+- board = [" "] * 9: Creates a fresh empty board for each game.
+while True:    state = get_state(board)    action = choose_action(board)    board[action] = "X"
+
+
+
+- while True: Repeats moves until the game ends.
+- get_state(board): Stores the current state.
+- choose_action(board): Selects an AI move.
+- board[action] = "X": Places X on the selected position.
+Check AI winning condition
+result = check_winner(board)if result == "X":    Q[state][action] += 1    break
+
+
+
+- Checks whether X has won.
+- If X wins, adds 1 reward to the selected action.
+- break stops the current training game.
+Check draw condition
+if result == "Draw":    break
+
+
+
+- If the game is a draw, the current training game stops.
+Random opponent
+available = [i for i in range(9) if board[i] == " "]opponent = random.choice(available)board[opponent] = "O"
+
+
+
+- Finds all empty positions.
+- random.choice(available) selects a random position.
+- board[opponent] = "O" places O on that position.
+Why do we use a random opponent?
+
+To allow the AI to practice against different possible opponent moves.
+Check opponent winning condition
+result = check_winner(board)if result == "O":    Q[state][action] -= 1    break
+
+
+
+- Checks whether O has won.
+- If O wins, subtracts 1 from the AI's selected action value.
+- This acts as a penalty for the AI's move.
+if result == "Draw":    break
+
+
+
+Stops the game if the opponent's move results in a draw.
+Q-Learning Update
+new_state = get_state(board)if new_state not in Q:    Q[new_state] = [0] * 9
+
+
+
+- new_state stores the updated board after both players move.
+- If the new state is not in the Q-table, it creates 9 zero values.
+Now the important formula:
+Q[state][action] += 0.1 * (    0.9 * max(Q[new_state]) - Q[state][action])
+
+
+
+This is the Q-Learning update rule.
+Q-Learning formula
+\[
+Q(s,a)\leftarrow Q(s,a)+\alpha
+[r+\gamma\max Q(s',a')-Q(s,a)]
+\]
+
+Symbol	Meaning
+\(Q(s,a)\)	Current Q-value
+\(\alpha\)	Learning rate (0.1)
+\(r\)	Immediate reward
+\(\gamma\)	Discount factor (0.9)
+\(s'\)	New state
+\(\max Q(s',a')\)	Best future Q-value
+
+
+In your code:
+- 0.1 is the learning rate.
+- 0.9 is the discount factor.
+- max(Q[new_state]) finds the highest future Q-value.
+- The formula updates the value of the selected action.
+Note: Your implementation uses a simplified Q-learning update. It does not explicitly include an immediate reward variable for every transition; it applies a reward or penalty when a game ends.
+
+Finally:
+print("Training completed!")
+
+
+
+Displays a message after all training episodes are completed.
+8. Play Game
+def play_game():    board = [" "] * 9
+
+
+
+- Defines the function to play against the AI.
+- Creates a new empty board.
+print("\nTic-Tac-Toe")print("Positions are:")print("0 | 1 | 2")print("--+---+--")print("3 | 4 | 5")print("--+---+--")print("6 | 7 | 8")
+
+
+
+Displays the game title and position numbers.
+AI Move
+action = choose_action(board, epsilon=0)board[action] = "X"
+
+
+
+- epsilon=0 means no exploration.
+- The AI selects its best-known move.
+- board[action] = "X" places X on the board.
+show_board(board)
+
+
+
+Displays the updated board.
+result = check_winner(board)if result:    print("Result:", result)    break
+
+
+
+- Checks whether the AI has won or the game is a draw.
+- If a result exists, it prints the result and stops the game.
+Human Move
+move = int(input("Enter your move (0-8): "))
+
+
+
+- input() accepts the human player's move.
+- int() converts the input into an integer.
+if move < 0 or move > 8 or board[move] != " ":    print("Invalid move!")    continue
+
+
+
+Checks whether:
+- The entered position is less than 0.
+- The entered position is greater than 8.
+- The selected position is already occupied.
+If any condition is true, it prints "Invalid move!" and asks the player to enter another move.
+board[move] = "O"
+
+
+
+Places the human player's symbol O on the selected position.
+result = check_winner(board)if result:    show_board(board)    print("Result:", result)    break
+
+
+
+Checks whether the human has won or the game is a draw. If so, displays the board and result.
+9. Train and Test
+train(5000)play_game()
+
+
+
+Explanation:
+- train(5000): Trains the AI for 5000 games.
+- play_game(): Starts the actual game between the AI and human.
+First, the AI learns through training. Then, the user can play against it.
+
+Important functions used in this practical
+Function	Purpose
+random.random()	Generates a random number
+random.choice()	Selects a random move
+get_state()	Converts board into a state
+show_board()	Displays the board
+check_winner()	Checks winner or draw
+choose_action()	Selects AI move
+train()	Trains the AI
+fit()	Not used in this practical
+max()	Finds the highest Q-value
+input()	Accepts human input
+break	Stops the loop
+continue	Skips to the next loop iteration
+
+Viva Questions and Answers
+1. What is Reinforcement Learning?
+
+Reinforcement Learning is a machine learning technique in which an agent learns by interacting with an environment and receiving rewards or penalties.
+
+2. What is Q-Learning?
+
+Q-Learning is a model-free reinforcement learning algorithm that learns the best actions for different states.
+
+3. What is a Q-table?
+
+A Q-table stores the values of actions for different states.
+
+4. What is an agent?
+
+An agent is the learner or decision-maker that interacts with the environment. In this practical, the AI player is the agent.
+
+5. What is an environment?
+
+An environment is the place where the agent performs actions. Here, the Tic-Tac-Toe board is the environment.
+
+6. What is a reward?
+
+A reward is positive feedback given to the agent for a good action.
+
+7. What is a penalty?
+
+A penalty is negative feedback given to the agent for an undesirable result.
+
+8. What is exploration?
+
+Exploration means trying new or random actions to discover better possibilities.
+
+9. What is exploitation?
+
+Exploitation means choosing the action with the highest learned Q-value.
+
+10. What is epsilon?
+
+Epsilon controls the probability of exploration. In this program, its default value is 0.1.
+
+11. What is the learning rate?
+
+The learning rate controls how much new information affects the existing Q-value. Here, it is 0.1.
+
+12. What is the discount factor?
+
+The discount factor determines the importance of future rewards. Here, it is 0.9.
+
+13. What are episodes?
+
+Episodes are complete training games. This program uses 5000 episodes.
+
+14. What is the purpose of random.choice()?
+
+It selects a random available position for a move.
+
+15. Is Q-Learning supervised or unsupervised learning?
+
+It is a reinforcement learning technique.
+Practical flow – Remember for exam
+1. Create Tic-Tac-Toe environment
+
+2. Initialize Q-table
+
+3. Define board state and winner functions
+
+4. Choose action using exploration or exploitation
+
+5. Train AI for 5000 episodes
+
+6. Update Q-values using rewards and penalties
+
+7. Start game with human player
+
+8. Display final result
+
+
+Exam tip
+ Remember these six important terms:
+1. Reinforcement Learning
+2. Agent
+3. Environment
+4. Q-table
+5. Exploration and Exploitation
+6. Reward and Penalty

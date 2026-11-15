@@ -1,0 +1,262 @@
+
+# 1. Import libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+
+# 2. Load dataset
+data = pd.read_csv("Wine dataset.csv")
+
+print("Wine Dataset:")
+print(data.head())
+
+# 3. Separate features and target
+X = data.iloc[:, 1:]
+y = data.iloc[:, 0]
+
+# 4. Standardize data
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
+
+# 5. Apply PCA
+pca = PCA(n_components=2)
+x_pca = pca.fit_transform(X)
+
+# 6. Display PCA data
+print("\nPCA Data:")
+print(x_pca)
+
+# 7. Explained variance
+print("\nExplained Variance Ratio:")
+print(pca.explained_variance_ratio_)
+
+# 8. Visualize PCA
+plt.scatter(x_pca[:, 0], x_pca[:, 1], c=y)
+
+plt.xlabel("Principal Component 1")
+plt.ylabel("Principal Component 2")
+plt.title("PCA - Wine Dataset")
+
+plt.show()
+
+
+
+
+
+
+1. Import libraries
+import pandas as pd import matplotlib.pyplot as plt from sklearn.preprocessing import StandardScaler from sklearn.decomposition import PCA
+- import pandas as pd – Imports Pandas for data handling.
+- import matplotlib.pyplot as plt – Imports Matplotlib for plotting graphs.
+- from sklearn.preprocessing import StandardScaler – Imports StandardScaler to standardize features.
+- from sklearn.decomposition import PCA – Imports PCA to reduce the number of features.
+2. Load dataset
+data = pd.read_csv("Wine dataset.csv")print("Wine Dataset:")print(data.head())
+
+
+
+Explanation:
+- pd.read_csv() – Reads the CSV file.
+- "Wine dataset.csv" – Name of the dataset.
+- data – Stores the dataset in DataFrame format.
+- data.head() – Displays the first five records.
+Purpose: To load and understand the Wine dataset.
+3. Separate features and target
+X = data.iloc[:, 1:]y = data.iloc[:, 0]
+
+
+
+Explanation:
+- data.iloc – Selects rows and columns using their index positions.
+- data.iloc[:, 1:] – Selects all rows and all columns except the first column.
+- X – Stores the input features.
+- data.iloc[:, 0] – Selects all rows from the first column.
+- y – Stores the target or class labels.
+Remember:
+- X = Input features.
+- y = Target/output column.
+- : = Select all rows.
+- 1: = Select columns starting from index 1.
+Purpose: To separate input data and output labels.
+4. Standardize data
+scaler = StandardScaler()X = scaler.fit_transform(X)
+
+
+
+Explanation:
+- StandardScaler() – Creates a standardization object.
+- scaler – Stores the StandardScaler object.
+- fit_transform(X) – Calculates the mean and standard deviation of each feature and standardizes the data.
+- X – Stores the standardized values.
+Why do we standardize data?
+
+Wine dataset features may have different measurement scales. Standardization brings them to a common scale so that features with larger numerical values do not dominate PCA.
+
+The standardized data has approximately:
+- Mean = 0
+- Standard deviation = 1
+5. Apply PCA
+pca = PCA(n_components=2)x_pca = pca.fit_transform(X)
+
+
+
+Explanation:
+- PCA(n_components=2) – Creates a PCA model that reduces the data to two components.
+- pca – Stores the PCA model.
+- fit_transform(X) – Learns the principal components and transforms the standardized data.
+- x_pca – Stores the reduced dataset.
+What is PCA?
+
+PCA stands for Principal Component Analysis.
+
+It is a dimensionality reduction technique used to reduce the number of features while retaining as much information (variance) as possible.
+
+What are principal components?
+- PC1 – First principal component; captures the maximum possible variance.
+- PC2 – Second principal component; captures the maximum remaining variance and is perpendicular to PC1.
+How PCA reduces dimensions
+Original Wine Dataset
+13 features
+Example: alcohol, malic acid, ash and other measurements
+PCA
+
+Reduced Dataset
+2 components
+PC1 and PC2
+
+6. Display PCA data
+print("\nPCA Data:")print(x_pca)
+
+
+
+Explanation:
+- print() – Displays the output.
+- x_pca – Contains the transformed data with two columns (PC1 and PC2).
+- Each row represents one wine sample.
+Purpose: To display the reduced dataset after applying PCA.
+7. Explained variance ratio
+print("\nExplained Variance Ratio:")print(pca.explained_variance_ratio_)
+
+
+
+Explanation:
+- pca.explained_variance_ratio_ – Gives the proportion of total variance explained by each principal component.
+- First value – Variance explained by PC1.
+- Second value – Variance explained by PC2.
+Example output:
+[0.36 0.19]
+
+
+This means:
+- PC1 explains 36% of the variance.
+- PC2 explains 19% of the variance.
+- Together, the two components explain 55% of the variance.
+The actual values depend on your dataset.
+8. Visualize PCA
+plt.scatter(x_pca[:, 0], x_pca[:, 1], c=y)plt.xlabel("Principal Component 1")plt.ylabel("Principal Component 2")plt.title("PCA - Wine Dataset")plt.show()
+
+
+
+Explanation:
+- plt.scatter() – Creates a scatter plot.
+- x_pca[:, 0] – Selects the first principal component for the X-axis.
+- x_pca[:, 1] – Selects the second principal component for the Y-axis.
+- c=y – Uses target class labels to assign different colors to wine classes.
+- plt.xlabel() – Labels the X-axis.
+- plt.ylabel() – Labels the Y-axis.
+- plt.title() – Adds the graph title.
+- plt.show() – Displays the graph.
+Purpose: To visualize the wine samples in two dimensions and observe how different classes are distributed.
+
+Important functions for practical exam
+Function	Purpose
+pd.read_csv()	Loads CSV dataset
+data.head()	Displays first five records
+data.iloc[:, 1:]	Selects input features
+data.iloc[:, 0]	Selects target column
+StandardScaler()	Creates standardization object
+fit_transform()	Fits and transforms data
+PCA(n_components=2)	Reduces data to two components
+explained_variance_ratio_	Displays variance explained
+plt.scatter()	Creates scatter plot
+plt.show()	Displays graph
+
+Viva questions and answers
+Q1. What is PCA?
+
+PCA stands for Principal Component Analysis. It is a dimensionality reduction technique used to reduce the number of features in a dataset.
+
+Q2. Why do we use PCA?
+
+We use PCA to reduce dimensions, remove redundant information and make data easier to visualize and analyze.
+
+Q3. What is dimensionality reduction?
+
+Dimensionality reduction is the process of reducing the number of features in a dataset while preserving important information.
+
+Q4. What is StandardScaler?
+
+StandardScaler is used to standardize data by bringing features to a common scale.
+
+Q5. Why is standardization important before PCA?
+
+Because features have different scales. Standardization prevents large-scale features from dominating PCA.
+
+Q6. What is a principal component?
+
+A principal component is a new variable created from the original features that captures variance in the data.
+
+Q7. What is PC1?
+
+PC1 is the first principal component that captures the maximum possible variance.
+
+Q8. What is PC2?
+
+PC2 is the second principal component that captures the maximum remaining variance and is perpendicular to PC1.
+
+Q9. What is n_components=2?
+
+It specifies that PCA should reduce the dataset to two principal components.
+
+Q10. What is explained variance ratio?
+
+It tells us how much information or variance each principal component retains from the original dataset.
+
+Q11. What is the use of fit_transform()?
+
+It learns the required parameters from the data and transforms the data.
+
+Q12. What is the use of iloc?
+
+iloc selects rows and columns using integer positions.
+
+Q13. Why do we use a scatter plot?
+
+A scatter plot helps us visualize the relationship and distribution of data points.
+
+Q14. What is the difference between features and target?
+- Features are input variables used for analysis.
+- Target is the output or class label we want to identify.
+Q15. Is PCA supervised or unsupervised?
+
+PCA is an unsupervised learning technique because it does not use target labels to calculate principal components.
+
+Quick revision for practical exam
+PCA practical flow
+1. Import libraries – Pandas, Matplotlib, StandardScaler and PCA.
+2. Load dataset – Read Wine dataset CSV.
+3. Separate data – Divide features (X) and target (y).
+4. Standardize – Convert features to a common scale.
+5. Apply PCA – Reduce features to two components.
+6. Display data – Print reduced PCA values.
+7. Check variance – Display explained variance ratio.
+8. Visualize – Create scatter plot using PC1 and PC2.
+
+Most important viva point
+Remember these five concepts:
+1. PCA = Principal Component Analysis.
+2. PCA = Dimensionality reduction.
+3. StandardScaler = Standardization.
+4. PC1 = Maximum variance.
+5. n_components=2 = Two principal components.

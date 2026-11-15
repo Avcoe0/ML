@@ -1,0 +1,448 @@
+!pip install xgboost
+# 1. Import libraries
+import pandas as pd
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from sklearn.ensemble import AdaBoostClassifier, GradientBoostingClassifier
+from xgboost import XGBClassifier
+
+from sklearn.metrics import (
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score
+)
+
+# 2. Load Dataset
+data = pd.read_csv("iris.csv")
+
+print(data.head())
+
+# 3. Separate Features and Target
+X = data.iloc[:, 1:5]
+y = data.iloc[:, -1]
+
+# 4. Convert target into numbers
+encoder = LabelEncoder()
+y = encoder.fit_transform(y)
+
+# 5. Split Dataset
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y,
+    test_size=0.2,
+    random_state=42
+)
+
+# 6. Create Models
+ada = AdaBoostClassifier(random_state=42)
+
+gbm = GradientBoostingClassifier(random_state=42)
+
+xgb = XGBClassifier(
+    random_state=42,
+    eval_metric="mlogloss"
+)
+
+# 7. Train Models
+ada.fit(X_train, y_train)
+gbm.fit(X_train, y_train)
+xgb.fit(X_train, y_train)
+
+# 8. Predictions
+y_ada = ada.predict(X_test)
+y_gbm = gbm.predict(X_test)
+y_xgb = xgb.predict(X_test)
+
+# 9. Evaluation Function
+def evaluate_model(name, y_test, y_pred):
+    print("\n", name)
+
+    print("Accuracy:", accuracy_score(y_test, y_pred))
+
+    print("Precision:", precision_score(
+        y_test, y_pred, average="weighted"
+    ))
+
+    print("Recall:", recall_score(
+        y_test, y_pred, average="weighted"
+    ))
+
+    print("F1 Score:", f1_score(
+        y_test, y_pred, average="weighted"
+    ))
+
+# 10. Evaluate Models
+evaluate_model("AdaBoost", y_test, y_ada)
+
+evaluate_model("Gradient Boosting", y_test, y_gbm)
+
+evaluate_model("XGBoost", y_test, y_xgb)
+
+
+
+
+
+
+
+Install XGBoost
+!pip install xgboost
+
+
+
+- pip install xgboost: Installs the XGBoost library.
+- ! is used to run a terminal command inside Jupyter Notebook.
+- We install it because XGBoost is an external library.
+Note: Run this command only once if XGBoost is already installed.
+2. Import libraries
+import pandas as pdfrom sklearn.model_selection import train_test_splitfrom sklearn.preprocessing import LabelEncoderfrom sklearn.ensemble import AdaBoostClassifier, GradientBoostingClassifierfrom xgboost import XGBClassifierfrom sklearn.metrics import (    accuracy_score,    precision_score,    recall_score,    f1_score)
+
+
+
+Explanation:
+Library / Function	Purpose
+pandas	Loads and handles the dataset
+train_test_split	Splits data into training and testing sets
+LabelEncoder	Converts text labels into numbers
+AdaBoostClassifier	Creates AdaBoost model
+GradientBoostingClassifier	Creates Gradient Boosting model
+XGBClassifier	Creates XGBoost model
+accuracy_score	Calculates accuracy
+precision_score	Calculates precision
+recall_score	Calculates recall
+f1_score	Calculates F1 score
+
+3. Load Dataset
+data = pd.read_csv("iris.csv")print(data.head())
+
+
+
+Explanation:
+- pd.read_csv("iris.csv"): Loads the Iris dataset.
+- data: Stores the dataset.
+- data.head(): Displays the first 5 rows.
+The Iris dataset contains measurements of flowers and their species.
+4. Separate Features and Target
+X = data.iloc[:, 1:5]y = data.iloc[:, -1]
+
+
+
+Explanation:
+
+First line:
+X = data.iloc[:, 1:5]
+
+
+
+- X stores input features.
+- : selects all rows.
+- 1:5 selects columns from index 1 to 4.
+- These are generally the four flower measurements.
+Second line:
+y = data.iloc[:, -1]
+
+
+
+- y stores the target column.
+- -1 selects the last column.
+- It generally contains the flower species.
+Remember:
+- X = Input features
+- y = Output or target
+Important: This code assumes your CSV has the four numerical features in columns 1–4 and the species in the last column.
+5. Convert Target into Numbers
+encoder = LabelEncoder()y = encoder.fit_transform(y)
+
+
+
+Explanation:
+- LabelEncoder(): Creates a label encoder.
+- fit_transform(y): Learns the unique class names and converts them into numerical labels.
+For example:
+Original species	Encoded value
+Setosa	0
+Versicolor	1
+Virginica	2
+
+Why do we use it?
+
+Machine learning classification models generally require numerical target labels.
+6. Split Dataset
+X_train, X_test, y_train, y_test = train_test_split(    X, y,    test_size=0.2,    random_state=42)
+
+
+
+Explanation:
+
+This divides the dataset into training and testing data.
+- X_train: Training input data.
+- X_test: Testing input data.
+- y_train: Training target values.
+- y_test: Actual testing target values.
+- test_size=0.2: Uses 20% data for testing and 80% for training.
+- random_state=42: Gives reproducible results.
+Dataset splitting
+80% Training
+
+20%
+
+
+Training data
+
+Testing data
+
+
+Why do we split the dataset?
+
+To train the model on one part of the data and test its performance on unseen data.
+7. Create Models
+ada = AdaBoostClassifier(random_state=42)gbm = GradientBoostingClassifier(random_state=42)xgb = XGBClassifier(    random_state=42,    eval_metric="mlogloss")
+
+
+
+Here, we create three different ensemble learning models.
+
+A. AdaBoost
+ada = AdaBoostClassifier(random_state=42)
+
+
+
+- Creates an AdaBoost classification model.
+- AdaBoost stands for Adaptive Boosting.
+- It gives more importance to incorrectly classified data points in subsequent training.
+B. Gradient Boosting
+gbm = GradientBoostingClassifier(random_state=42)
+
+
+
+- Creates a Gradient Boosting model.
+- It builds models sequentially.
+- Each new model tries to reduce the errors made by the previous models.
+C. XGBoost
+xgb = XGBClassifier(    random_state=42,    eval_metric="mlogloss")
+
+
+
+- Creates an XGBoost classification model.
+- XGBoost stands for Extreme Gradient Boosting.
+- It is an optimized and efficient implementation of gradient boosting.
+- random_state=42: Makes results reproducible.
+- eval_metric="mlogloss": Uses multiclass log loss as an evaluation metric during training.
+8. Train Models
+ada.fit(X_train, y_train)gbm.fit(X_train, y_train)xgb.fit(X_train, y_train)
+
+
+
+Explanation:
+- fit() trains the machine learning model.
+- X_train contains input features.
+- y_train contains correct output labels.
+All three models are trained using the same training dataset.
+
+Why do we train three models?
+
+To compare their performance and understand which model performs better.
+9. Predictions
+y_ada = ada.predict(X_test)y_gbm = gbm.predict(X_test)y_xgb = xgb.predict(X_test)
+
+
+
+Explanation:
+- predict() predicts the output for testing data.
+- y_ada: Predictions made by AdaBoost.
+- y_gbm: Predictions made by Gradient Boosting.
+- y_xgb: Predictions made by XGBoost.
+Why do we use it?
+
+To check how accurately each model predicts the flower species.
+10. Evaluation Function
+def evaluate_model(name, y_test, y_pred):    print("\n", name)    print("Accuracy:", accuracy_score(y_test, y_pred))    print("Precision:", precision_score(        y_test, y_pred, average="weighted"    ))    print("Recall:", recall_score(        y_test, y_pred, average="weighted"    ))    print("F1 Score:", f1_score(        y_test, y_pred, average="weighted"    ))
+
+
+
+This function evaluates the performance of each model.
+
+Line-by-line explanation:
+
+Line 1:
+def evaluate_model(name, y_test, y_pred):
+
+
+
+Defines a function named evaluate_model().
+
+It accepts:
+- name: Model name.
+- y_test: Actual output values.
+- y_pred: Predicted output values.
+Line 2:
+print("\n", name)
+
+
+
+Prints the model name.
+
+Line 3:
+accuracy_score(y_test, y_pred)
+
+
+
+Calculates the accuracy of the model.
+
+Line 4:
+precision_score(y_test, y_pred, average="weighted")
+
+
+
+Calculates weighted precision.
+
+Line 5:
+recall_score(y_test, y_pred, average="weighted")
+
+
+
+Calculates weighted recall.
+
+Line 6:
+f1_score(y_test, y_pred, average="weighted")
+
+
+
+Calculates weighted F1 score.
+
+What does average="weighted" mean?
+
+It calculates the metric for each class and combines the results by giving more weight to classes with more samples.
+Understand the four evaluation measures
+Measure	Meaning
+Accuracy	How many predictions are correct overall
+Precision	How many predicted positive cases are actually positive
+Recall	How many actual positive cases are correctly identified
+F1 Score	Balance between precision and recall
+
+Higher values generally indicate better performance.
+11. Evaluate Models
+evaluate_model("AdaBoost", y_test, y_ada)evaluate_model("Gradient Boosting", y_test, y_gbm)evaluate_model("XGBoost", y_test, y_xgb)
+
+
+
+Explanation:
+
+We call the same evaluation function three times.
+- First call evaluates AdaBoost.
+- Second call evaluates Gradient Boosting.
+- Third call evaluates XGBoost.
+Finally, we get the Accuracy, Precision, Recall and F1 Score of all three models.
+
+Important differences between the three algorithms
+AdaBoost	Gradient Boosting	XGBoost
+Focuses on incorrectly classified samples	Reduces previous prediction errors	Uses optimized gradient boosting
+Adjusts sample weights	Uses loss gradients	Uses regularization and optimization
+Sequential learning	Sequential learning	Sequential boosting
+
+How ensemble boosting works
+First weak learner
+
+Identify prediction errors
+
+Next learner improves predictions
+
+Combine learners for final prediction
+
+Conceptual boosting process; the exact error-handling method differs between algorithms.
+Important functions used in this practical
+Function	Purpose
+pd.read_csv()	Loads dataset
+data.head()	Displays first 5 rows
+iloc[]	Selects columns
+LabelEncoder()	Converts labels into numbers
+fit_transform()	Encodes target values
+train_test_split()	Splits dataset
+AdaBoostClassifier()	Creates AdaBoost model
+GradientBoostingClassifier()	Creates GBM model
+XGBClassifier()	Creates XGBoost model
+fit()	Trains model
+predict()	Predicts output
+accuracy_score()	Calculates accuracy
+precision_score()	Calculates precision
+recall_score()	Calculates recall
+f1_score()	Calculates F1 score
+
+Viva Questions and Answers
+1. What is Ensemble Learning?
+
+Ensemble Learning is a machine learning technique that combines multiple models to improve prediction performance.
+
+2. What is Boosting?
+
+Boosting is an ensemble technique in which models are trained sequentially to improve the errors made by previous models.
+
+3. What is AdaBoost?
+
+AdaBoost stands for Adaptive Boosting. It gives more importance to incorrectly classified samples during training.
+
+4. What is Gradient Boosting?
+
+Gradient Boosting is an ensemble technique that builds models sequentially to reduce prediction errors.
+
+5. What is XGBoost?
+
+XGBoost stands for Extreme Gradient Boosting. It is an optimized and efficient boosting algorithm.
+
+6. What is the difference between Bagging and Boosting?
+- Bagging trains models independently, often in parallel.
+- Boosting trains models sequentially, with later models improving earlier errors.
+7. Why do we use LabelEncoder?
+
+To convert categorical text labels into numerical values.
+
+8. Why do we use train_test_split?
+
+To divide the dataset into training and testing data.
+
+9. What is Accuracy?
+
+Accuracy is the ratio of correctly predicted samples to the total number of samples.
+
+10. What is Precision?
+
+Precision tells us how many predicted positive samples are actually positive.
+
+11. What is Recall?
+
+Recall tells us how many actual positive samples are correctly predicted.
+
+12. What is F1 Score?
+
+F1 Score is the harmonic mean of Precision and Recall.
+
+13. What is fit()?
+
+It trains the machine learning model using training data.
+
+14. What is predict()?
+
+It predicts output values using the trained model.
+
+15. Why do we compare three models?
+
+To identify which algorithm gives better classification performance on the testing data.
+Practical flow – Remember for exam
+1. Install and import libraries
+
+2. Load Iris dataset
+
+3. Separate features and target
+
+4. Encode target labels
+
+5. Split training and testing data
+
+6. Create three boosting models
+
+7. Train all three models
+
+8. Predict test outputs
+
+9. Evaluate and compare performance
+

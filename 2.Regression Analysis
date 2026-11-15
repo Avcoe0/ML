@@ -1,0 +1,463 @@
+
+# 1. Import libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression, Ridge, Lasso
+from sklearn.metrics import r2_score, mean_squared_error
+
+# 2. Load dataset
+data = pd.read_csv("uber.csv")
+
+print("Dataset Shape:")
+print(data.shape)
+
+print("\nColumns:")
+print(data.columns)
+
+# 3. Check null values
+print("\nNull Values:")
+print(data.isnull().sum())
+
+# 4. Pre-processing
+data = data.drop(["Unnamed: 0", "key", "pickup_datetime"], axis=1)
+data = data.dropna()
+
+# Remove invalid values
+data = data[data["fare_amount"] > 0]
+data = data[data["passenger_count"] > 0]
+
+# 5. Create distance feature
+data["distance"] = np.sqrt(
+    (data["dropoff_longitude"] - data["pickup_longitude"])**2 +
+    (data["dropoff_latitude"] - data["pickup_latitude"])**2
+)
+
+print("\nAfter Pre-processing:")
+print(data.head())
+
+# 6. Remove outliers using IQR
+Q1 = data["fare_amount"].quantile(0.25)
+Q3 = data["fare_amount"].quantile(0.75)
+
+IQR = Q3 - Q1
+
+lower = Q1 - 1.5 * IQR
+upper = Q3 + 1.5 * IQR
+
+data = data[
+    (data["fare_amount"] >= lower) &
+    (data["fare_amount"] <= upper)
+]
+
+# 7. Correlation
+print("\nCorrelation:")
+print(data.corr())
+
+# 8. Prepare data
+X = data.drop("fare_amount", axis=1)
+y = data["fare_amount"]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# 9. Linear Regression
+linear = LinearRegression()
+linear.fit(X_train, y_train)
+pred1 = linear.predict(X_test)
+
+# 10. Ridge Regression
+ridge = Ridge()
+ridge.fit(X_train, y_train)
+pred2 = ridge.predict(X_test)
+
+# 11. Lasso Regression
+lasso = Lasso()
+lasso.fit(X_train, y_train)
+pred3 = lasso.predict(X_test)
+
+# 12. Compare models
+models = ["Linear", "Ridge", "Lasso"]
+predictions = [pred1, pred2, pred3]
+
+for model, pred in zip(models, predictions):
+    r2 = r2_score(y_test, pred)
+    rmse = np.sqrt(mean_squared_error(y_test, pred))
+
+    print("\n", model, "Regression")
+    print("R2 Score:", r2)
+    print("RMSE:", rmse)
+
+# 13. Correlation graph
+plt.imshow(data.corr(), cmap="coolwarm")
+plt.colorbar()
+plt.title("Correlation Matrix")
+plt.show()
+
+
+
+
+
+. Import libraries
+import pandas as pdimport numpy as npimport matplotlib.pyplot as pltfrom sklearn.model_selection import train_test_splitfrom sklearn.linear_model import LinearRegression, Ridge, Lassofrom sklearn.metrics import r2_score, mean_squared_error
+
+
+
+Explanation:
+- import pandas as pd – Imports Pandas for data handling.
+- import numpy as np – Imports NumPy for mathematical operations.
+- import matplotlib.pyplot as plt – Imports Matplotlib for graphs.
+- train_test_split – Divides data into training and testing sets.
+- LinearRegression – Imports the Linear Regression model.
+- Ridge – Imports Ridge Regression.
+- Lasso – Imports Lasso Regression.
+- r2_score – Measures model performance.
+- mean_squared_error – Calculates mean squared error.
+2. Load dataset
+data = pd.read_csv("uber.csv")print("Dataset Shape:")print(data.shape)print("\nColumns:")print(data.columns)
+
+
+
+Explanation:
+- pd.read_csv("uber.csv") – Loads the Uber dataset.
+- data – Stores the dataset.
+- data.shape – Displays the number of rows and columns.
+- data.columns – Displays all column names.
+Purpose: To load and understand the dataset.
+3. Check null values
+print("\nNull Values:")print(data.isnull().sum())
+
+
+
+Explanation:
+- data.isnull() – Checks for missing values.
+- .sum() – Counts missing values in each column.
+- print() – Displays the missing value count.
+Purpose: To identify missing data before model training.
+4. Data preprocessing
+data = data.drop(["Unnamed: 0", "key", "pickup_datetime"], axis=1)data = data.dropna()
+
+
+
+Explanation:
+
+First line:
+- data.drop() – Removes unwanted columns.
+- "Unnamed: 0" – Unnecessary index column.
+- "key" – Unique identifier of the trip.
+- "pickup_datetime" – Pickup date and time column.
+- axis=1 – Indicates that we are removing columns.
+Second line:
+
+- dropna() – Removes rows containing missing values.
+Remove invalid values
+data = data[data["fare_amount"] > 0]data = data[data["passenger_count"] > 0]
+
+
+
+Explanation:
+- data["fare_amount"] > 0 – Selects records where fare is positive.
+- data["passenger_count"] > 0 – Selects records with at least one passenger.
+- Both conditions remove invalid records.
+Purpose: To clean the dataset before applying machine learning.
+5. Create distance feature
+data["distance"] = np.sqrt(    (data["dropoff_longitude"] - data["pickup_longitude"])**2 +    (data["dropoff_latitude"] - data["pickup_latitude"])**2)
+
+
+
+Explanation:
+- data["distance"] – Creates a new column called distance.
+- dropoff_longitude – Longitude of the drop-off location.
+- pickup_longitude – Longitude of the pickup location.
+- dropoff_latitude – Latitude of the drop-off location.
+- pickup_latitude – Latitude of the pickup location.
+- **2 – Calculates the square of a value.
+- np.sqrt() – Calculates the square root.
+This uses the Euclidean distance formula:
+\[
+d=\sqrt{(x_2-x_1)^2+(y_2-y_1)^2}
+\]
+
+Purpose: To calculate the approximate distance between pickup and drop-off coordinates.
+print("\nAfter Pre-processing:")print(data.head())
+
+
+
+- data.head() – Displays the first five records after preprocessing.
+6. Remove outliers using IQR
+Q1 = data["fare_amount"].quantile(0.25)Q3 = data["fare_amount"].quantile(0.75)IQR = Q3 - Q1lower = Q1 - 1.5 * IQRupper = Q3 + 1.5 * IQRdata = data[    (data["fare_amount"] >= lower) &    (data["fare_amount"] <= upper)]
+
+
+
+Line-by-line explanation:
+- quantile(0.25) – Calculates the first quartile (Q1).
+- quantile(0.75) – Calculates the third quartile (Q3).
+- IQR = Q3 - Q1 – Calculates the Interquartile Range.
+- lower – Calculates the lower outlier limit.
+- upper – Calculates the upper outlier limit.
+- >= lower – Selects fares greater than or equal to the lower limit.
+- <= upper – Selects fares less than or equal to the upper limit.
+- & – Combines both conditions using AND.
+- data = data[...] – Keeps only records within the limits.
+What is IQR?
+
+IQR stands for Interquartile Range. It is used to identify and remove extreme values (outliers).
+\[
+IQR=Q3-Q1
+\]
+
+Purpose: To remove unusually high or low fare values that may affect model performance.
+7. Correlation
+print("\nCorrelation:")print(data.corr())
+
+
+
+Explanation:
+- data.corr() – Calculates the correlation between numerical columns.
+- print() – Displays the correlation matrix.
+What is correlation?
+
+Correlation measures the relationship between two numerical variables.
+- Positive correlation – Both variables tend to increase together.
+- Negative correlation – One variable tends to increase when the other decreases.
+- Zero or near-zero correlation – Little or no linear relationship.
+8. Prepare data
+X = data.drop("fare_amount", axis=1)y = data["fare_amount"]
+
+
+
+Explanation:
+- X – Stores the input features.
+- data.drop("fare_amount", axis=1) – Removes the target column from input data.
+- y – Stores the target variable.
+- data["fare_amount"] – Selects the fare amount column.
+Remember:
+- X = Input variables.
+- y = Output variable.
+Split dataset
+X_train, X_test, y_train, y_test = train_test_split(    X, y, test_size=0.2, random_state=42)
+
+
+
+Explanation:
+- train_test_split() – Divides the dataset into training and testing data.
+- X_train – Input training data.
+- X_test – Input testing data.
+- y_train – Output training data.
+- y_test – Actual output testing data.
+- test_size=0.2 – Uses 20% data for testing and 80% for training.
+- random_state=42 – Ensures reproducible splitting.
+Purpose: To train the model on one part of the dataset and test it on another part.
+9. Linear Regression
+linear = LinearRegression()linear.fit(X_train, y_train)pred1 = linear.predict(X_test)
+
+
+
+Explanation:
+- LinearRegression() – Creates a Linear Regression model.
+- linear – Stores the model.
+- fit(X_train, y_train) – Trains the model using training data.
+- predict(X_test) – Predicts fare amounts for testing data.
+- pred1 – Stores predicted fare values.
+What is Linear Regression?
+
+Linear Regression is a supervised machine learning algorithm used to predict continuous numerical values.
+
+Example: Predicting Uber fare based on trip information.
+10. Ridge Regression
+ridge = Ridge()ridge.fit(X_train, y_train)pred2 = ridge.predict(X_test)
+
+
+
+Explanation:
+- Ridge() – Creates a Ridge Regression model.
+- ridge – Stores the model.
+- fit() – Trains the model.
+- predict() – Predicts fare values.
+- pred2 – Stores predicted values.
+What is Ridge Regression?
+
+Ridge Regression is a type of Linear Regression that uses L2 regularization to reduce large model coefficients and help prevent overfitting.
+11. Lasso Regression
+lasso = Lasso()lasso.fit(X_train, y_train)pred3 = lasso.predict(X_test)
+
+
+
+Explanation:
+- Lasso() – Creates a Lasso Regression model.
+- lasso – Stores the model.
+- fit() – Trains the model.
+- predict() – Predicts fare values.
+- pred3 – Stores predicted values.
+What is Lasso Regression?
+
+Lasso Regression is a type of Linear Regression that uses L1 regularization. It can reduce some feature coefficients to zero, helping with feature selection.
+12. Compare models
+models = ["Linear", "Ridge", "Lasso"]predictions = [pred1, pred2, pred3]for model, pred in zip(models, predictions):    r2 = r2_score(y_test, pred)    rmse = np.sqrt(mean_squared_error(y_test, pred))    print("\n", model, "Regression")    print("R2 Score:", r2)    print("RMSE:", rmse)
+
+
+
+Explanation:
+- models – Stores the three model names.
+- predictions – Stores predictions from all three models.
+- for – Repeats the evaluation for each model.
+- zip() – Combines model names and predictions pairwise.
+- r2_score(y_test, pred) – Calculates the R² score.
+- mean_squared_error(y_test, pred) – Calculates mean squared error.
+- np.sqrt() – Takes the square root to calculate RMSE.
+- print() – Displays the evaluation results.
+What is R² score?
+R² stands for Coefficient of Determination.
+
+It measures how well the model explains the variation in the target variable.
+- R² closer to 1 = Better fit.
+- R² around 0 = Model explains little variation.
+- R² below 0 = Model performs worse than a simple mean-based prediction on the test data.
+What is RMSE?
+RMSE stands for Root Mean Squared Error.
+
+It measures the average size of prediction errors, giving more weight to larger errors.
+- Lower RMSE = Better prediction accuracy.
+- Higher RMSE = Larger prediction errors.
+Remember: Higher R² and lower RMSE generally indicate a better model.
+13. Correlation graph
+plt.imshow(data.corr(), cmap="coolwarm")plt.colorbar()plt.title("Correlation Matrix")plt.show()
+
+
+
+Explanation:
+- data.corr() – Calculates correlations between numerical columns.
+- plt.imshow() – Displays the correlation matrix as a color-based image.
+- cmap="coolwarm" – Uses different colors to represent correlation values.
+- plt.colorbar() – Displays the color scale.
+- plt.title() – Adds the graph title.
+- plt.show() – Displays the graph.
+Purpose: To visualize the relationship between different numerical features.
+
+Important differences for viva
+Model	Regularization	Main purpose
+Linear Regression	No	Predict continuous values
+Ridge Regression	L2	Reduce large coefficients
+Lasso Regression	L1	Reduce coefficients; can select features
+
+Important functions for practical exam
+Function	Purpose
+pd.read_csv()	Load dataset
+data.shape	Dataset dimensions
+data.isnull().sum()	Count missing values
+drop()	Remove columns
+dropna()	Remove missing rows
+np.sqrt()	Square root
+quantile()	Calculate quartiles
+data.corr()	Calculate correlation
+train_test_split()	Split training and testing data
+fit()	Train model
+predict()	Predict output
+r2_score()	Evaluate R²
+mean_squared_error()	Calculate MSE
+plt.imshow()	Display correlation matrix
+
+Viva questions and answers
+Q1. What is Linear Regression?
+
+Linear Regression is a supervised machine learning algorithm used to predict continuous numerical values.
+
+Q2. What is the purpose of this practical?
+
+To predict Uber fare amounts using Linear Regression, Ridge Regression and Lasso Regression and compare their performance.
+
+Q3. What is supervised learning?
+
+Supervised learning is a machine learning technique where a model learns from labeled training data.
+
+Q4. What is the target variable in this practical?
+
+fare_amount is the target variable.
+
+Q5. What are the input features?
+
+Pickup coordinates, drop-off coordinates, passenger count and calculated distance.
+
+Q6. What is Ridge Regression?
+
+Ridge Regression is Linear Regression with L2 regularization.
+
+Q7. What is Lasso Regression?
+
+Lasso Regression is Linear Regression with L1 regularization.
+
+Q8. What is regularization?
+
+Regularization is a technique used to reduce overfitting by adding a penalty to large model coefficients.
+
+Q9. What is the difference between Ridge and Lasso?
+
+Ridge uses L2 regularization, while Lasso uses L1 regularization. Lasso can make some coefficients zero.
+
+Q10. What is train-test split?
+
+It divides data into training and testing sets to evaluate model performance.
+
+Q11. What is the use of test_size=0.2?
+
+It assigns 20% of the dataset to testing and 80% to training.
+
+Q12. What is IQR?
+
+IQR stands for Interquartile Range. It is used to identify outliers.
+
+Q13. What is correlation?
+
+Correlation measures the strength and direction of a relationship between two numerical variables.
+
+Q14. What is R² score?
+
+R² measures how much variation in the target variable is explained by the model.
+
+Q15. What is RMSE?
+
+RMSE measures prediction error. A lower RMSE generally indicates better model performance.
+
+Q16. What is the use of fit()?
+
+It trains the machine learning model.
+
+Q17. What is the use of predict()?
+
+It predicts output values using the trained model.
+
+Q18. Why do we create a distance feature?
+
+To calculate the approximate distance between pickup and drop-off locations, which can help predict fare.
+
+Important practical corrections
+Your code is suitable for understanding and demonstrating the three regression models. However, remember these points:
+1. Distance calculation: Your formula calculates straight-line distance in latitude-longitude coordinate units, not actual kilometers. For real travel distance, Haversine distance is more appropriate.
+2. Data leakage: Ideally, calculate outlier limits using only training data after splitting, rather than using the full dataset before splitting.
+3. Standardization: Ridge and Lasso generally work better when input features are standardized. Your current code does not standardize them.
+4. Model tuning: Ridge() and Lasso() use default regularization strengths. Their performance can change when you tune alpha.
+Quick revision flow
+1. Import libraries.
+2. Load Uber dataset.
+3. Check missing values.
+4. Clean data and remove invalid values.
+5. Create distance feature.
+6. Remove fare outliers using IQR.
+7. Calculate correlation.
+8. Separate X and y; split training and testing data.
+9. Apply Linear, Ridge and Lasso Regression.
+10. Compare using R² and RMSE.
+11. Display correlation matrix.
+
+Must remember for viva
+- Linear Regression = Basic prediction model.
+- Ridge = L2 regularization.
+- Lasso = L1 regularization.
+- fit() = Training.
+- predict() = Prediction.
+- R² = Higher is generally better.
+- RMSE = Lower is better.
+- IQR = Outlier detection.

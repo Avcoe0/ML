@@ -1,0 +1,304 @@
+
+# 1. Import libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+
+# 2. Load Dataset
+data = pd.read_csv("iris.csv")
+
+print("First 5 rows:")
+print(data.head())
+
+# 3. Select Features
+X = data.iloc[:, 1:5]
+
+print("\nFeatures:")
+print(X.head())
+
+# 4. Elbow Method
+wcss = []
+
+for i in range(1, 11):
+    kmeans = KMeans(n_clusters=i, random_state=42, n_init=10)
+    kmeans.fit(X)
+    wcss.append(kmeans.inertia_)
+
+# Plot Elbow Graph
+plt.plot(range(1, 11), wcss, marker="o")
+plt.xlabel("Number of Clusters")
+plt.ylabel("WCSS")
+plt.title("Elbow Method")
+plt.show()
+
+# 5. Apply K-Means
+kmeans = KMeans(n_clusters=3, random_state=42, n_init=10)
+
+data["Cluster"] = kmeans.fit_predict(X)
+
+print("\nClustered Data:")
+print(data.head(10))
+
+# 6. Visualize Clusters
+plt.scatter(
+    X.iloc[:, 0],
+    X.iloc[:, 1],
+    c=data["Cluster"],
+    cmap="viridis"
+)
+
+plt.xlabel("Sepal Length")
+plt.ylabel("Sepal Width")
+plt.title("K-Means Clustering")
+plt.show()
+
+
+
+
+
+
+
+
+
+1. Import libraries
+import pandas as pdimport matplotlib.pyplot as pltfrom sklearn.cluster import KMeans
+
+
+
+Explanation:
+- pandas: Used to read and handle the dataset.
+- matplotlib.pyplot: Used to create graphs.
+- KMeans: Used to perform K-Means clustering.
+2. Load Dataset
+data = pd.read_csv("iris.csv")print("First 5 rows:")print(data.head())
+
+
+
+Explanation:
+- pd.read_csv("iris.csv"): Loads the Iris dataset from a CSV file.
+- data: Stores the dataset.
+- data.head(): Displays the first 5 rows of the dataset.
+Why do we use it?
+
+To check whether the dataset is loaded correctly and understand its structure.
+3. Select Features
+X = data.iloc[:, 1:5]print("\nFeatures:")print(X.head())
+
+
+
+Explanation:
+- data.iloc: Selects rows and columns using index positions.
+- : means select all rows.
+- 1:5 means select columns from index 1 to 4.
+- X stores the selected input features.
+The four Iris features are generally:
+1. Sepal Length
+2. Sepal Width
+3. Petal Length
+4. Petal Width
+Why do we use it?
+
+K-Means works on numerical features to group similar data points into clusters.
+
+Important: This code assumes the first column contains the flower name or species and the next four columns contain numerical features.
+4. Elbow Method
+wcss = []for i in range(1, 11):    kmeans = KMeans(n_clusters=i, random_state=42, n_init=10)    kmeans.fit(X)    wcss.append(kmeans.inertia_)
+
+
+
+Explanation line by line:
+
+Line 1:
+wcss = []
+
+
+
+Creates an empty list to store WCSS values.
+
+Line 2:
+for i in range(1, 11):
+
+
+
+Runs a loop from 1 to 10 clusters.
+
+Line 3:
+kmeans = KMeans(n_clusters=i, random_state=42, n_init=10)
+
+
+
+Creates the K-Means model.
+- n_clusters=i: Number of clusters.
+- random_state=42: Gives reproducible results.
+- n_init=10: Runs the algorithm 10 times with different initial centroid positions and keeps the best result.
+Line 4:
+kmeans.fit(X)
+
+
+
+Trains the K-Means model using the selected features.
+
+Line 5:
+wcss.append(kmeans.inertia_)
+
+
+
+Stores the WCSS value for each cluster count.
+
+What is WCSS?
+
+WCSS stands for Within-Cluster Sum of Squares. It measures how close the data points are to their cluster centers.
+- Lower WCSS means data points are closer to their cluster centers.
+- WCSS generally decreases as the number of clusters increases.
+Plot Elbow Graph
+plt.plot(range(1, 11), wcss, marker="o")plt.xlabel("Number of Clusters")plt.ylabel("WCSS")plt.title("Elbow Method")plt.show()
+
+
+
+Explanation:
+- plt.plot(): Draws a line graph.
+- range(1, 11): Displays cluster counts from 1 to 10 on the X-axis.
+- wcss: Displays WCSS values on the Y-axis.
+- marker="o": Shows circular markers.
+- xlabel(): Gives the X-axis name.
+- ylabel(): Gives the Y-axis name.
+- title(): Gives the graph title.
+- show(): Displays the graph.
+
+
+Why is it called the Elbow Method?
+
+The graph looks like an elbow. The point where the decrease in WCSS starts slowing down is called the elbow point. It helps us choose the number of clusters.
+
+For the Iris dataset, 3 clusters are commonly used in this practical.
+5. Apply K-Means Clustering
+kmeans = KMeans(n_clusters=3, random_state=42, n_init=10)data["Cluster"] = kmeans.fit_predict(X)print("\nClustered Data:")print(data.head(10))
+
+
+
+Explanation:
+
+Line 1:
+kmeans = KMeans(n_clusters=3, random_state=42, n_init=10)
+
+
+
+Creates a K-Means model with 3 clusters.
+
+Line 2:
+data["Cluster"] = kmeans.fit_predict(X)
+
+
+
+- fit_predict() trains the model and assigns each data point to a cluster.
+- data["Cluster"] creates a new column named Cluster.
+- Cluster labels are generally 0, 1 and 2.
+Line 3:
+print(data.head(10))
+
+
+
+Displays the first 10 rows with their assigned cluster numbers.
+
+Why do we use it?
+
+To group similar Iris flowers into three clusters based on their measurements.
+6. Visualize Clusters
+plt.scatter(    X.iloc[:, 0],    X.iloc[:, 1],    c=data["Cluster"],    cmap="viridis")
+
+
+
+Explanation:
+- plt.scatter(): Creates a scatter plot.
+- X.iloc[:, 0]: Selects the first feature (Sepal Length).
+- X.iloc[:, 1]: Selects the second feature (Sepal Width).
+- c=data["Cluster"]: Gives different colors to different clusters.
+- cmap="viridis": Sets the color scheme.
+plt.xlabel("Sepal Length")plt.ylabel("Sepal Width")plt.title("K-Means Clustering")plt.show()
+
+
+
+- xlabel(): Names the X-axis.
+- ylabel(): Names the Y-axis.
+- title(): Sets the graph title.
+- show(): Displays the scatter plot.
+
+
+
+Why do we use it?
+
+To visually understand how the data points are grouped into different clusters.
+
+Important functions used in this practical
+Function	Purpose
+pd.read_csv()	Loads CSV file
+data.head()	Displays first 5 rows
+data.iloc[]	Selects rows and columns
+KMeans()	Creates clustering model
+fit()	Trains the model
+fit_predict()	Trains and assigns clusters
+inertia_	Returns WCSS
+append()	Adds values to a list
+plt.plot()	Creates line graph
+plt.scatter()	Creates scatter plot
+plt.show()	Displays graph
+
+Viva Questions and Answers
+1. What is clustering?
+
+Clustering is an unsupervised machine learning technique that groups similar data points together.
+
+2. What is K-Means?
+
+K-Means is an unsupervised machine learning algorithm that divides data into K clusters.
+
+3. Why is it called K-Means?
+
+Because it divides data into K clusters and calculates the mean (centroid) of each cluster.
+
+4. What is the Iris dataset?
+
+The Iris dataset contains flower measurements such as sepal length, sepal width, petal length and petal width.
+
+5. What is the Elbow Method?
+
+The Elbow Method is used to find the suitable number of clusters by plotting WCSS against the number of clusters.
+
+6. What is WCSS?
+
+WCSS stands for Within-Cluster Sum of Squares. It measures the distance between data points and their cluster centroids.
+
+7. What is a centroid?
+
+A centroid is the center point or mean position of a cluster.
+
+8. What is n_clusters=3?
+
+It specifies that the algorithm should create 3 clusters.
+
+9. What is random_state=42?
+
+It ensures reproducible results by controlling random initialization.
+
+10. Is K-Means supervised or unsupervised?
+
+K-Means is an unsupervised learning algorithm because it does not require predefined class labels for clustering.
+
+11. What is the difference between classification and clustering?
+- Classification uses labelled data.
+- Clustering groups unlabelled data based on similarity.
+12. What is the purpose of fit_predict()?
+
+It trains the model and returns the cluster number assigned to each data point.
+Practical flow – Remember for exam
+Load Iris Dataset
+
+Select Four Features
+
+Apply Elbow Method
+
+Choose 3 Clusters
+
+Apply K-Means
+
+Display Clustered Data and Graph

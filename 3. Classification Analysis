@@ -1,0 +1,297 @@
+
+# 1. Import libraries
+import matplotlib.pyplot as plt
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, classification_report
+
+# 2. Load Digits Dataset
+digits = datasets.load_digits()
+
+X = digits.data
+y = digits.target
+
+print("Dataset Shape:", X.shape)
+
+# 3. Split Dataset
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# 4. Create SVM Model
+model = SVC(kernel="rbf")
+
+# 5. Train the Model
+model.fit(X_train, y_train)
+
+# 6. Make Predictions
+y_pred = model.predict(X_test)
+
+# 7. Evaluate Model
+print("\nAccuracy:", accuracy_score(y_test, y_pred))
+
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
+
+# 8. Display Test Images
+plt.figure(figsize=(10, 4))
+
+for i in range(10):
+    plt.subplot(2, 5, i + 1)
+    plt.imshow(X_test[i].reshape(8, 8), cmap="gray")
+    plt.title("Predicted: " + str(y_pred[i]))
+    plt.axis("off")
+
+plt.show()
+
+
+
+
+
+1. Import libraries
+import matplotlib.pyplot as pltfrom sklearn import datasetsfrom sklearn.model_selection import train_test_splitfrom sklearn.svm import SVCfrom sklearn.metrics import accuracy_score, classification_report
+
+
+
+Explanation:
+- import matplotlib.pyplot as plt – Imports Matplotlib for displaying images.
+- from sklearn import datasets – Imports built-in datasets.
+- train_test_split – Splits data into training and testing sets.
+- SVC – Imports Support Vector Classifier.
+- accuracy_score – Calculates model accuracy.
+- classification_report – Displays precision, recall and F1-score.
+2. Load Digits Dataset
+digits = datasets.load_digits()X = digits.datay = digits.targetprint("Dataset Shape:", X.shape)
+
+
+
+Explanation:
+- datasets.load_digits() – Loads the handwritten Digits dataset.
+- digits – Stores the dataset.
+- X = digits.data – Stores input features (pixel values).
+- y = digits.target – Stores target labels (digits from 0 to 9).
+- X.shape – Displays the number of samples and features.
+Important: Each handwritten digit image is 8 × 8 pixels, so it contains 64 features.
+Digits dataset structure
+8 × 8
+Image size
+
+
+64
+Features
+
+
+
+Each image contains 64 pixel values, and the model predicts one digit from 0 to 9.
+
+3. Split dataset
+X_train, X_test, y_train, y_test = train_test_split(    X, y, test_size=0.2, random_state=42)
+
+
+
+Explanation:
+- train_test_split() – Divides the dataset into training and testing data.
+- X_train – Input training data.
+- X_test – Input testing data.
+- y_train – Output training labels.
+- y_test – Actual testing labels.
+- test_size=0.2 – Uses 20% data for testing and 80% for training.
+- random_state=42 – Ensures the same split every time.
+Purpose: To train the model on one part of the data and test its performance on unseen data.
+4. Create SVM model
+model = SVC(kernel="rbf")
+
+
+
+Explanation:
+- SVC() – Creates a Support Vector Classifier model.
+- model – Stores the SVM model.
+- kernel="rbf" – Uses the Radial Basis Function kernel.
+What is SVM?
+
+SVM stands for Support Vector Machine. It is a supervised machine learning algorithm used for classification and regression.
+
+What is a kernel?
+
+A kernel helps SVM separate data that may not be linearly separable.
+
+What is RBF?
+
+RBF stands for Radial Basis Function. It is used to handle nonlinear classification problems.
+5. Train the model
+model.fit(X_train, y_train)
+
+
+
+Explanation:
+- model.fit() – Trains the SVM model.
+- X_train – Training input features.
+- y_train – Training output labels.
+Purpose: To teach the model to recognize handwritten digits using training data.
+6. Make predictions
+y_pred = model.predict(X_test)
+
+
+
+Explanation:
+- model.predict() – Predicts the output for testing data.
+- X_test – Input test images represented as pixel values.
+- y_pred – Stores the predicted digit labels.
+Purpose: To identify the handwritten digits in the test dataset.
+7. Evaluate model
+print("\nAccuracy:", accuracy_score(y_test, y_pred))print("\nClassification Report:")print(classification_report(y_test, y_pred))
+
+
+
+Explanation:
+- accuracy_score(y_test, y_pred) – Compares actual and predicted labels and calculates accuracy.
+- y_test – Actual digit labels.
+- y_pred – Predicted digit labels.
+- classification_report() – Displays performance measures.
+What is Accuracy?
+
+Accuracy is the percentage of correctly predicted values.
+\[
+Accuracy=\frac{\text{Correct Predictions}}{\text{Total Predictions}}\times100
+\]
+
+What is a Classification Report?
+
+It displays four important performance measures:
+Measure	Meaning
+Precision	How many predicted positive results are correct
+Recall	How many actual positive results are correctly identified
+F1-score	Balance between precision and recall
+Support	Number of actual samples in each class
+
+8. Display test images
+plt.figure(figsize=(10, 4))for i in range(10):    plt.subplot(2, 5, i + 1)    plt.imshow(X_test[i].reshape(8, 8), cmap="gray")    plt.title("Predicted: " + str(y_pred[i]))    plt.axis("off")plt.show()
+
+
+
+Line-by-line explanation:
+- plt.figure(figsize=(10, 4)) – Creates a figure with width 10 and height 4.
+- for i in range(10): – Repeats the process for the first 10 test images.
+- plt.subplot(2, 5, i + 1) – Divides the figure into 2 rows and 5 columns.
+- X_test[i] – Selects one test image's pixel values.
+- .reshape(8, 8) – Converts 64 pixel values into an 8 × 8 image.
+- plt.imshow() – Displays the image.
+- cmap="gray" – Displays the image in grayscale.
+- plt.title() – Displays the predicted digit above the image.
+- str(y_pred[i]) – Converts the predicted digit into a string.
+- plt.axis("off") – Hides the X-axis and Y-axis.
+- plt.show() – Displays all 10 images.
+Purpose: To visually check the handwritten digit images and the model's predictions.
+
+Important functions for practical exam
+Function	Purpose
+datasets.load_digits()	Loads Digits dataset
+digits.data	Gets input features
+digits.target	Gets digit labels
+train_test_split()	Splits dataset
+SVC()	Creates SVM classifier
+fit()	Trains model
+predict()	Predicts output
+accuracy_score()	Calculates accuracy
+classification_report()	Displays evaluation measures
+plt.imshow()	Displays image
+reshape(8, 8)	Converts pixel values into image
+plt.subplot()	Creates multiple plotting areas
+plt.show()	Displays graph
+
+Viva questions and answers
+Q1. What is SVM?
+
+SVM stands for Support Vector Machine. It is a supervised machine learning algorithm used for classification and regression.
+
+Q2. What is the purpose of this practical?
+
+To classify handwritten digits using the SVM algorithm.
+
+Q3. What is classification?
+
+Classification is the process of predicting a category or class from input data.
+
+Q4. What is the Digits dataset?
+
+It is a built-in Scikit-learn dataset containing handwritten digit images from 0 to 9.
+
+Q5. What is the size of each digit image?
+
+Each image is 8 × 8 pixels.
+
+Q6. How many features are present in each image?
+
+64 features (8 × 8 = 64).
+
+Q7. What is SVC?
+
+SVC stands for Support Vector Classifier. It is used to perform classification using SVM.
+
+Q8. What is a kernel in SVM?
+
+A kernel helps SVM handle data that cannot be separated using a straight line.
+
+Q9. What is RBF?
+
+RBF stands for Radial Basis Function. It is a nonlinear kernel used in SVM.
+
+Q10. What is the use of fit()?
+
+It trains the machine learning model.
+
+Q11. What is the use of predict()?
+
+It predicts output labels for new input data.
+
+Q12. What is accuracy?
+
+Accuracy measures the percentage of correct predictions.
+
+Q13. What is precision?
+
+Precision measures how many predicted positive samples are actually positive.
+
+Q14. What is recall?
+
+Recall measures how many actual positive samples are correctly identified.
+
+Q15. What is F1-score?
+
+F1-score is the harmonic mean of precision and recall.
+
+Q16. What is the use of reshape(8,8)?
+
+It converts 64 pixel values into an 8 × 8 image.
+
+Q17. What is the use of cmap="gray"?
+
+It displays the image in grayscale.
+
+Q18. What is random_state=42?
+
+It ensures reproducible random splitting of the dataset.
+
+Quick revision for practical exam
+SVM practical flow
+1. Import libraries.
+2. Load Digits dataset.
+3. Separate features (X) and target (y).
+4. Split dataset into training and testing data.
+5. Create SVM model using RBF kernel.
+6. Train model using fit().
+7. Predict using predict().
+8. Evaluate using accuracy and classification report.
+9. Display 10 test images with predicted labels.
+
+Must remember for viva
+- SVM = Support Vector Machine.
+- SVC = Support Vector Classifier.
+- RBF = Radial Basis Function.
+- Digits = 0 to 9.
+- Image size = 8 × 8.
+- Features = 64.
+- fit() = Training.
+- predict() = Prediction.
+- Accuracy = Correct predictions percentage.
